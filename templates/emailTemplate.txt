@@ -1,0 +1,11 @@
+{{brand}}
+Hi,{{username}}
+Thank you for choosing {{brand}}. Use the following OTP to complete your Sign Up procedures. OTP is valid for 5 minutes
+
+Pin:{{pin}}
+
+
+{{brand}}
+{{website}}
+{{address1}}
+{{address2}}

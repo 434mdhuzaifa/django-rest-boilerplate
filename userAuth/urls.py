@@ -1,5 +1,7 @@
 from django.urls import path
 from userAuth.views import *
 urlpatterns = [
-    path("createuser/",userCreate)
+    path("user/",UserView.as_view()),
+    path("userlogin/",userLogin),
+    path("reset-password/",passwordReset)
 ]
