@@ -9,6 +9,7 @@ dependencies = [
     "django==5",
     "djangorestframework>=3.15.2",
     "django-cors-middleware>=1.5.0",
+    "icecream>=2.1.3",
 ]
 requires-python = "==3.10.*"
 readme = "README.md"
@@ -17,3 +18,9 @@ license = {text = "MIT"}
 
 [tool.pdm]
 distribution = false
+
+[tool.pdm.scripts]
+start="manage.py runserver"
+makemigrations="manage.py makemigrations"
+migrate="manage.py migrate"
+startapp="django-admin startapp"

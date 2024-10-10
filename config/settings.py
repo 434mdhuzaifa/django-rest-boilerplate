@@ -33,8 +33,7 @@ EXTERNAL_APPS=[
     'rest_framework',
 ]
 LOCAL_APPS=[
-    "apps.auth",
-    
+    "userAuth"
 ]
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-]+LOCAL_APPS+EXTERNAL_APPS
+]+EXTERNAL_APPS+LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
