@@ -54,7 +54,7 @@ class UserLoginSerializers(serializers.Serializer):
 
 
 class ResetPasswordSerializers(serializers.Serializer):
-    username = serializers.CharField(max_length=100, min_length=4,required=False)
+    pin=serializers.IntegerField()
     email = serializers.EmailField(required=False)
     password1 = serializers.CharField(max_length=15, min_length=6)
     password2 = serializers.CharField(max_length=15, min_length=6)
@@ -69,24 +69,25 @@ class ResetPasswordSerializers(serializers.Serializer):
             raise serializers.ValidationError("Password mismatch")
         return data
     
-    def validate_username(self,value):
-        if not UserModel.objects.filter(username=value).first():
-            raise serializers.ValidationError("user doesnt exist")
-        return value
     def validate_email(self,value):
-        if UserModel.objects.filter(email=value).first():
+        if not UserModel.objects.filter(email=value).first():
             raise serializers.ValidationError("user doesnt exist")
         return value
     def update(self, validated_data):
         user=False
-        username=validated_data.get("username")
         email=validated_data.get("email")
-        if username:
-            user=UserModel.objects.filter(username=username).first()
         if email:
-            user=UserModel.objects.filter(username=username).first()
-        resetToken=ResetToken.objects.get(user=user)
-        if resetToken.is_expired:
-            user.set_password(validated_data['password1'])
-            return user
-        return False
+            user=UserModel.objects.filter(email=email).first()
+        resetToken=ResetToken.objects.filter(user=user,isvalid=True).last()
+        if resetToken:
+            ic(resetToken.token)
+            if not resetToken.is_expired:
+                if str(validated_data["pin"])==str(resetToken.token):
+                    resetToken.isvalid=False
+                    resetToken.save()
+                    user.set_password(validated_data['password1'])
+                    user.save()
+                    return True,user
+                return False,"Pin does not match"
+            return False,"Reset token expired"
+        return False,"No reset token found of the user"

@@ -92,8 +92,11 @@ def passwordReset(request):
         if email:
             UserModel = get_user_model()
             user = UserModel.objects.get(email=email)
-            token = ResetToken.objects.filter(user=user).first()
-            if not token or (token and token.is_expired): # -------------> if not working
+            token = ResetToken.objects.filter(user=user,isvalid=True).last()
+            if not token or (token and token.is_expired):
+                if token:
+                    token.isvalid=False
+                    token.save()    
                 pin = generateToken(5)
                 token = ResetToken(user=user, token=str(pin))
                 token.save()
@@ -128,6 +131,7 @@ def passwordReset(request):
                     message=message,
                     from_email=None,
                 )
+                mailFlag=1
                 if mailFlag:
                     return SendMsgResponse("Mail send successfully", 200)
                 raise Exception("Mail send failed")
@@ -142,14 +146,15 @@ def passwordReset(request):
 @api_view(["POST"])
 def resetPassword(request):
     try:
+        ic(request.data)
         resetData = ResetPasswordSerializers(request.data)
         validate_data = resetData.run_validation(resetData.data)
         resetData.validate(validate_data)
-        userOrFalse = resetData.update(validate_data)
-        if userOrFalse != False:
-            userData = UserSerializers(userOrFalse)
+        isSuccess,userOrmsg = resetData.update(validate_data)
+        if isSuccess:
+            userData = UserSerializers(userOrmsg)
             return SendResponse(userData.data)
-        return SendMsgResponse("Token expired.Try Again", 400)
+        return SendMsgResponse(userOrmsg, 400)
     except ValidationError as e:
         return SendErrorResponse(e, 400)
     except Exception as e:

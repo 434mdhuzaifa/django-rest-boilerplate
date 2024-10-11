@@ -47,27 +47,3 @@ def SendErrorResponse(error, status=500):
 def generateToken(number):
     return "".join(random.choices(string.digits, k=number))
 
-
-def format_timedelta(seconds):
-    intervals = (
-        ("year", 60 * 60 * 24 * 365),
-        ("day", 60 * 60 * 24),
-        ("hour", 60 * 60),
-        ("minute", 60),
-        ("second", 1),
-    )
-
-    result = []
-    for name, count in intervals:
-        if seconds >= count:
-            whole, remainder = divmod(seconds, count)
-            if whole > 0:
-                result.append(f"{whole} {name}{'s' if whole != 1 else ''}")
-                seconds -= whole * count
-
-    if seconds > 0:
-        result.append(f"{seconds:.0f} second{'s' if seconds != 1 else ''}")
-
-    return (
-        ", ".join(result[:-1]) + " and " + result[-1] if len(result) > 1 else result[0]
-    )
