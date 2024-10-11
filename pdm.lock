@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:04e939c06ea2df0a724a88b14e649f6d94395e7ecbca43f3080202073d14383f"
+content_hash = "sha256:3c7326640205f70b5b5411094e745e83f9005d1d43543e91ecef4ec9ba30239c"
 
 [[metadata.targets]]
 requires_python = "==3.10.*"
@@ -91,6 +91,22 @@ files = [
 ]
 
 [[package]]
+name = "djangorestframework-simplejwt"
+version = "5.3.1"
+requires_python = ">=3.8"
+summary = "A minimal JSON Web Token authentication plugin for Django REST Framework"
+groups = ["default"]
+dependencies = [
+    "django>=3.2",
+    "djangorestframework>=3.12",
+    "pyjwt<3,>=1.7.1",
+]
+files = [
+    {file = "djangorestframework_simplejwt-5.3.1-py3-none-any.whl", hash = "sha256:381bc966aa46913905629d472cd72ad45faa265509764e20ffd440164c88d220"},
+    {file = "djangorestframework_simplejwt-5.3.1.tar.gz", hash = "sha256:6c4bd37537440bc439564ebf7d6085e74c5411485197073f508ebdfa34bc9fae"},
+]
+
+[[package]]
 name = "executing"
 version = "2.1.0"
 requires_python = ">=3.8"
@@ -126,6 +142,17 @@ groups = ["default"]
 files = [
     {file = "pygments-2.18.0-py3-none-any.whl", hash = "sha256:b8e6aca0523f3ab76fee51799c488e38782ac06eafcf95e7ba832985c8e7b13a"},
     {file = "pygments-2.18.0.tar.gz", hash = "sha256:786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199"},
+]
+
+[[package]]
+name = "pyjwt"
+version = "2.9.0"
+requires_python = ">=3.8"
+summary = "JSON Web Token implementation in Python"
+groups = ["default"]
+files = [
+    {file = "PyJWT-2.9.0-py3-none-any.whl", hash = "sha256:3b02fb0f44517787776cf48f2ae25d8e14f300e6d7545a4315cee571a415e850"},
+    {file = "pyjwt-2.9.0.tar.gz", hash = "sha256:7e1e5b56cc735432a7369cbfa0efe50fa113ebecdc04ae6922deba8b84582d0c"},
 ]
 
 [[package]]
