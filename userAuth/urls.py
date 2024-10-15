@@ -4,6 +4,6 @@ urlpatterns = [
     path("user/",UserView.as_view()),
     path("user/<int:pk>/",UserView.as_view()),
     path("userlogin/",UserLogin.as_view()),
-    path("reset-password-otp/",PasswordReset.as_view(0)),
-    path("reset-password-data/",resetPassword)
+    path("reset-password-otp/",PasswordReset.as_view()),
+    path("reset-password-data/",ResetPassword.as_view())
 ]
