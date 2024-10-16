@@ -14,12 +14,17 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from userAuth.models import ResetToken
-
-
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 # Create your views here
 class UserView(APIView):
+    def get_permissions(self):
+        if self.request.method=="POST":
+            return [AllowAny()]
+        return super().get_permissions()
+    
     def post(self, request):
-        try:
+        try:    
             userData = UserInputSerializers(request.data)
             validate_data = userData.run_validation(userData.data)
             userData.create(validate_data)
@@ -73,6 +78,7 @@ class UserView(APIView):
 
 
 class UserLogin(APIView):
+    permission_classes=[AllowAny]
     def post(self, request: HttpRequest):
         try:
             UserModel = get_user_model()
@@ -93,6 +99,7 @@ class UserLogin(APIView):
                 if user:
                     # login(request, user)
                     userData = UserSerializers(user)
+                    
                     return SendResponse(userData.data, 200)
                 return SendMsgResponse("Password icorrect")
             return SendMsgResponse("Hi")
@@ -155,6 +162,8 @@ class PasswordReset(APIView):
                     400,
                 )
             return SendMsgResponse("Email not found", 400)
+        except ObjectDoesNotExist as e:
+            return SendErrorResponse("User not found", 404)
         except Exception as e:
             return SendErrorResponse(e, 500)
 

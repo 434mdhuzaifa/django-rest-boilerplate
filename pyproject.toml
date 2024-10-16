@@ -23,7 +23,7 @@ distribution = false
 
 [tool.pdm.scripts]
 start.cmd="manage.py runserver"
-stat.env_file =".env"
+start.env_file =".env"
 makemigrations="manage.py makemigrations"
 migrate="manage.py migrate"
 startapp="django-admin startapp"
