@@ -15,16 +15,26 @@ from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from userAuth.models import ResetToken
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
+import jwt
+from django.utils import timezone
+from django.conf.global_settings import SECRET_KEY
+
 # Create your views here
 class UserView(APIView):
-    def get_permissions(self):
-        if self.request.method=="POST":
-            return [AllowAny()]
-        return super().get_permissions()
     
+    permission_classes = [IsAuthenticated]
+    def get_authenticators(self):
+        if self.request.method=="POST":
+            return []    
+        return super().get_authenticators()
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [AllowAny]
+        return super().get_permissions()
+
     def post(self, request):
-        try:    
+        try:
             userData = UserInputSerializers(request.data)
             validate_data = userData.run_validation(userData.data)
             userData.create(validate_data)
@@ -62,6 +72,7 @@ class UserView(APIView):
     def put(self, request, pk=None):
         try:
             if pk:
+                ic(request.user)
                 UserModel = get_user_model()
                 user = UserModel.objects.get(id=pk)
                 serializer = UserSerializers(user, data=request.data, partial=True)
@@ -78,7 +89,9 @@ class UserView(APIView):
 
 
 class UserLogin(APIView):
-    permission_classes=[AllowAny]
+    permission_classes = [AllowAny]
+    authentication_classes=[]
+
     def post(self, request: HttpRequest):
         try:
             UserModel = get_user_model()
@@ -97,18 +110,21 @@ class UserLogin(APIView):
                     username=user.username, password=validate_data.get("password")
                 )
                 if user:
-                    # login(request, user)
                     userData = UserSerializers(user)
-                    
-                    return SendResponse(userData.data, 200)
-                return SendMsgResponse("Password icorrect")
-            return SendMsgResponse("Hi")
+                    timeExp = timezone.now() + timezone.timedelta(seconds=10)
+                    token = jwt.encode(userData.data, SECRET_KEY)
+                    response = Response(userData.data, 200)
+                    response.set_cookie("access_token", token, expires=timeExp,samesite="None",httponly=True,secure=True)
+                    return response
+                return SendErrorResponse("Password icorrect", 400)
+            return SendErrorResponse("User not found", 400)
         except Exception as e:
             return SendErrorResponse(e, 500)
 
 
 class PasswordReset(APIView):
-    permission_classes=[AllowAny]
+    permission_classes = [AllowAny]
+
     def post(self, request):
         try:
             email = request.data.get("email", False)
@@ -132,7 +148,7 @@ class PasswordReset(APIView):
                             "website": "www.website.com",
                             "address1": "House-16, Road-12, (4th floor), Nikunja-2",
                             "address2": "Khilkhet, Dhaka-1229",
-                            "link":f"http://localhost:5173/passwordreset?email={user.email}&pin={pin}"
+                            "link": f"http://localhost:5173/passwordreset?email={user.email}&pin={pin}",
                         },
                     )
                     message = render_to_string(
@@ -144,7 +160,7 @@ class PasswordReset(APIView):
                             "website": "www.website.com",
                             "address1": "House-16, Road-12, (4th floor), Nikunja-2",
                             "address2": "Khilkhet, Dhaka-1229",
-                            "link":f"http://localhost:5173/passwordreset?email={user.email}&pin={pin}"
+                            "link": f"http://localhost:5173/passwordreset?email={user.email}&pin={pin}",
                         },
                     )
 
@@ -171,7 +187,8 @@ class PasswordReset(APIView):
 
 
 class ResetPassword(APIView):
-    permission_classes=[AllowAny]
+    permission_classes = [AllowAny]
+
     def post(self, request):
         try:
             resetData = ResetPasswordSerializers(request.data)
