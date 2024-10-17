@@ -108,6 +108,7 @@ class UserLogin(APIView):
 
 
 class PasswordReset(APIView):
+    permission_classes=[AllowAny]
     def post(self, request):
         try:
             email = request.data.get("email", False)
@@ -131,6 +132,7 @@ class PasswordReset(APIView):
                             "website": "www.website.com",
                             "address1": "House-16, Road-12, (4th floor), Nikunja-2",
                             "address2": "Khilkhet, Dhaka-1229",
+                            "link":f"http://localhost:5173/passwordreset?email={user.email}&pin={pin}"
                         },
                     )
                     message = render_to_string(
@@ -142,6 +144,7 @@ class PasswordReset(APIView):
                             "website": "www.website.com",
                             "address1": "House-16, Road-12, (4th floor), Nikunja-2",
                             "address2": "Khilkhet, Dhaka-1229",
+                            "link":f"http://localhost:5173/passwordreset?email={user.email}&pin={pin}"
                         },
                     )
 
@@ -153,7 +156,6 @@ class PasswordReset(APIView):
                         message=message,
                         from_email=None,
                     )
-                    mailFlag = 1
                     if mailFlag:
                         return SendMsgResponse("Mail send successfully", 200)
                     raise Exception("Mail send failed")
@@ -169,6 +171,7 @@ class PasswordReset(APIView):
 
 
 class ResetPassword(APIView):
+    permission_classes=[AllowAny]
     def post(self, request):
         try:
             resetData = ResetPasswordSerializers(request.data)
