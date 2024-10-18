@@ -20,11 +20,11 @@ def convert_error_details(error_details):
     result = []
     if isinstance(error_details, list):
         for i, data in enumerate(error_details):
-            result.append({"key": f"Error {i+1}", "msg": str(data)})
+            result.append({"key": f"Error {i+1}", "detail": str(data)})
     else:
         for field, details in error_details.items():
             for detail in details:
-                result.append({"key": field, "msg": str(detail)})
+                result.append({"key": field, "detail": str(detail)})
     return result
 
 
@@ -33,8 +33,8 @@ def SendResponse(data, status=200):
     return Response(data, status=status)
 
 
-def SendMsgResponse(msg: str, status: int = 200):
-    return Response({"msg": msg}, status=status)
+def SendMsgResponse(detail: str, status: int = 200):
+    return Response({"detail": detail}, status=status)
 
 
 def SendErrorResponse(error, status=500):

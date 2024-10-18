@@ -19,10 +19,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 import jwt
 from django.utils import timezone
 from django.conf.global_settings import SECRET_KEY
-
 # Create your views here
 class UserView(APIView):
-    
     permission_classes = [IsAuthenticated]
     def get_authenticators(self):
         if self.request.method=="POST":
@@ -72,7 +70,6 @@ class UserView(APIView):
     def put(self, request, pk=None):
         try:
             if pk:
-                ic(request.user)
                 UserModel = get_user_model()
                 user = UserModel.objects.get(id=pk)
                 serializer = UserSerializers(user, data=request.data, partial=True)
@@ -111,7 +108,7 @@ class UserLogin(APIView):
                 )
                 if user:
                     userData = UserSerializers(user)
-                    timeExp = timezone.now() + timezone.timedelta(seconds=10)
+                    timeExp = timezone.now() + timezone.timedelta(minutes=15)
                     token = jwt.encode(userData.data, SECRET_KEY)
                     response = Response(userData.data, 200)
                     response.set_cookie("access_token", token, expires=timeExp,samesite="None",httponly=True,secure=True)
